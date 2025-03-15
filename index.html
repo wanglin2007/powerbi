@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>泡泡颜色大作战</title>
+    <style>
+        /* 游戏容器样式 */
+        .game-area {
+            width: 800px;
+            height: 600px;
+            margin: 20px auto;
+            background: #FFECD2;
+            border-radius: 20px;
+            padding: 20px;
+        }
+
+        /* 目标颜色显示区 */
+        .target-color {
+            width: 100px;
+            height: 100px;
+            border: 5px solid white;
+            border-radius: 50%;
+            margin: 0 auto;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        /* 泡泡基础样式 */
+        .bubble {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: inline-block;
+            margin: 10px;
+            cursor: pointer;
+            transition: transform 0.2s;
+            border: 3px solid white;
+        }
+
+        .bubble:hover {
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="game-area">
+        <h2 style="text-align: center; color: #FF6B6B;">分数: <span id="score">0</span></h2>
+        <div class="target-color" id="targetColor"></div>
+        <div id="bubbleContainer" style="margin-top: 30px;"></div>
+        <button onclick="startGame()" style="display: block; margin: 20px auto; padding: 10px 30px; background: #4CAF50; color: white; border: none; border-radius: 25px; font-size: 20px;">
+            开始游戏
+        </button>
+    </div>
+
+    <script>
+        let score = 0;
+        let timeLeft = 30;
+        let gameTimer;
+
+        // 生成随机颜色
+        function randomColor() {
+            return '#' + Math.floor(Math.random()*16777215).toString(16);
+        }
+
+        // 创建泡泡
+        function createBubbles() {
+            const container = document.getElementById('bubbleContainer');
+            container.innerHTML = '';
+            
+            // 生成目标颜色
+            const target = document.getElementById('targetColor');
+            const targetColor = randomColor();
+            target.style.backgroundColor = targetColor;
+
+            // 生成12个泡泡（其中3个是目标颜色）
+            for(let i = 0; i < 12; i++) {
+                const bubble = document.createElement('div');
+                bubble.className = 'bubble';
+                bubble.style.backgroundColor = i < 3 ? targetColor : randomColor();
+                bubble.onclick = () => checkColor(bubble);
+                container.appendChild(bubble);
+            }
+        }
+
+        // 检查点击颜色
+        function checkColor(bubble) {
+            const targetColor = document.getElementById('targetColor').style.backgroundColor;
+            if(bubble.style.backgroundColor === targetColor) {
+                score += 10;
+                bubble.style.transform = 'scale(0)';
+                setTimeout(() => bubble.remove(), 200);
+                document.getElementById('score').textContent = score;
+            }
+        }
+
+        // 开始游戏
+        function startGame() {
+            score = 0;
+            timeLeft = 30;
+            clearInterval(gameTimer);
+            createBubbles();
+            
+            gameTimer = setInterval(() => {
+                timeLeft--;
+                if(timeLeft <= 0) {
+                    clearInterval(gameTimer);
+                    alert(`时间到！你的得分是：${score}`);
+                    createBubbles();
+                }
+            }, 1000);
+        }
+    </script>
+</body>
+</html>
